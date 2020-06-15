@@ -3,6 +3,12 @@
 
 This module provide argument completers for the **Microsoft.Powershell.SecretManagement** module. 
 
+## Installation
+```
+# Require Microsoft.Powershell.SecretManagement to be installed.
+Install-Module -Name SecretManagementArgumentCompleter -AllowClobber
+```
+
 ## How to use
 Recommended use is to add this module to your `$Profile` file so it loads on a new session).
 
