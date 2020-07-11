@@ -12,7 +12,7 @@
     RootModule        = 'SecretManagementArgumentCompleter.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '1.0.0'
+    ModuleVersion     = '1.1.0'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -30,7 +30,7 @@
     Copyright         = '(c) 2020 Francis Mercier. All rights reserved.'
 
     # Description of the functionality provided by this module
-    Description       = 'Argument completer for SecretManagement module'
+    Description       = 'Argument completer for SecretManagement module & AzKeyvault'
 
     # Minimum version of the Windows PowerShell engine required by this module
     # PowerShellVersion = ''
@@ -72,7 +72,7 @@
     #FunctionsToExport = @('')
 
     # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
-    CmdletsToExport   = 'Get-SecretInfo'
+    CmdletsToExport   = 'Get-SecretInfo', 'Clear-AZKeyvaultCache'
 
     # Variables to export from this module
     VariablesToExport = '*'
