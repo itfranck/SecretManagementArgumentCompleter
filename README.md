@@ -12,9 +12,7 @@ Install-Module -Name SecretManagementArgumentCompleter
 ## Loading the module
 Recommended use is to add this module to your `$Profile` file so it loads on a new session automatically).
 
-To load, use
-
-`Import-SecretManagementArgumentCompleter`
+To load, use: `Import-SecretManagementArgumentCompleter`
 
 
 Cache will be saved on disk at: `"$env:LOCALAPPDATA\Powershell\SecretManagement"`
