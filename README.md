@@ -1,38 +1,38 @@
 # SecretManagementArgumentCompleter
  Argument completer for SecretManagement module
 
-This module provide argument completers for the **Microsoft.Powershell.SecretManagement** module. 
+This module provide argument completers for the **Microsoft.Powershell.SecretManagement** module and partially for **AzKeyvault** (only on secret related cmdlet).
 
 ## Installation
-```
+```Powershell
 # Require Microsoft.Powershell.SecretManagement to be installed.
-Install-Module -Name SecretManagementArgumentCompleter -AllowClobber
+Install-Module -Name SecretManagementArgumentCompleter 
 ```
 
-## How to use
-Recommended use is to add this module to your `$Profile` file so it loads on a new session).
+## Loading the module
+Recommended use is to add this module to your `$Profile` file so it loads on a new session automatically).
 
-Cmdlet in the **SecretManagement** module will now have argument completion.
+To load, use
 
-In order to provide a fast & efficient completion, this modules overrides `Get-SecretInfo` to add an additional `-Cache` parameter. This module is not required on any machines where your scripts / modules are intended to be deployed, unless you make use of the `-Cache` parameter (SecretManagement module do not support that parameter natively.)
+`Import-SecretManagementArgumentCompleter`
 
-Therefore, its use should be limited to console / local environment only to avoid the extra module dependency.
+**Optional parameter**
+`[Switch] -InMemory`
+
+If Specified, Secret cache will never be stored on disk. 
+
+If omitted, secret cache will be saved at the following location:
+`"$env:LOCALAPPDATA\Powershell\SecretManagement"`
+
+In both case, initial argument completion for vault names and secrets name is collected upon the first time argument completion is triggered.
+
+`In-memory` means the initial collection will be done each session when triggered for the first time. 
+
+Cached on disk means the informations is saved / reloaded between sessions. 
 
 
+In any cases, you can delete existing cache (if you need to refresh the values) by calling `Clear-SecretManagementArgumentCompleterCache`
 
-### About Get-SecretInfo overrides
-
-The new `Get-SecretInfo` overrides does automatically export secret info (Name, Type,VaultName) to `"$env:USERPROFILE\Powershell\SecretsManagement\Vaults"` when called.
-
-If called with the `-Cache` parameter, a local copy of the secret infos will be provided instead.
-
-If there was no cache, the cache will be created at that time. 
-
-This ensure that secret name completion is fast and do not need to connect to any external vaults while designing your code.
-
-**Note that no secrets are ever stored on the local environment by the use of this module. Only infos (Name,Type,VaultName) are kept locally.**
-
-To refresh the argument completion cache at anytime, just call `Get-SecretInfo` without the `-Cache` parameter. 
 
 
 
@@ -42,11 +42,11 @@ You can find your profile location by checking the `$Profile`  variable
 VSCode shorthand 
 
 ```Powershell
+if (! (Test-Path($profile)) {New-Item -Path $profile -ItemType File}
 $psEditor.Workspace.OpenFile($profile)
 ```
-(Note that file will fail to open if it does not exist, in which case you'll have to create it manually.)
 
-Just add `Import-Module -Name SecretManagementArgumentCompleter` to it so you get argument completion configured on profile load.
+Just add `Import-SecretManagementArgumentCompleter` to it so you get argument completion configured on profile load.
 
 
 ### AZ Keyvault
@@ -74,11 +74,5 @@ if ((Get-SecretVault -Name $VaultParams.Name) -eq $null) {
 
 #Set-Secret @vault -Name 'MySecret' -Secret 'SomethingSecret'
 ```
-
-### Troubleshooting
-If you have trouble with the argument completion for one or multiple vaults, try `Get-SecretInfo` and see what happens. 
-
-The argument completion is based upon results of this cmdlet. 
-One of the common cause of the argument completion failing would be if there was no cache present and the vaults was not accessible to `Get-SecretInfo` (for instance, if you are not connected to Az, it won't be possible to query secret infos.)
 
 
