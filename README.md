@@ -16,19 +16,24 @@ To load, use
 
 `Import-SecretManagementArgumentCompleter`
 
+
+Cache will be saved on disk at: `"$env:LOCALAPPDATA\Powershell\SecretManagement"`
+Only the following informations are cached
+- SubscriptionID (AzKeyvault only)
+- Vault Name
+- Secret Name (Actual secret is never cached)
+
 **Optional parameter**
 `[Switch] -InMemory`
 
-If Specified, Secret cache will never be stored on disk. 
+Add the `In-Memory` switch to never create a file based secret cache. 
 
-If omitted, secret cache will be saved at the following location:
-`"$env:LOCALAPPDATA\Powershell\SecretManagement"`
 
-In both case, initial argument completion for vault names and secrets name is collected upon the first time argument completion is triggered.
+In all cases, secret cache is built in-memory. The initial call to obtain secret info is a bit longer since the provider is contacted to obtain the information. 
 
-`In-memory` means the initial collection will be done each session when triggered for the first time. 
+`In-Memory` means the cache is per-session so each time a new session is restarted, you do have the initial fetch to the provider when doing argument completion. 
 
-Cached on disk means the informations is saved / reloaded between sessions. 
+Default is to save that information on disk and reload it in-memory when session is loaded.
 
 
 In any cases, you can delete existing cache (if you need to refresh the values) by calling `Clear-SecretManagementArgumentCompleterCache`
