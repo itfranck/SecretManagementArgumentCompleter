@@ -30,7 +30,7 @@
     Copyright         = '(c) 2020 Francis Mercier. All rights reserved.'
 
     # Description of the functionality provided by this module
-    Description       = 'Argument completer for SecretManagement module & AzKeyvault'
+    Description       = 'Argument completer for Microsoft.Powershell.SecretManagement'
 
     # Minimum version of the Windows PowerShell engine required by this module
     # PowerShellVersion = ''
@@ -120,5 +120,3 @@
     # DefaultCommandPrefix = ''
 
 }
-
-
