@@ -7,7 +7,7 @@ task Stats RemoveStats, WriteStats
 $script:ModuleName = Split-Path -Path $PSScriptRoot -Leaf
 $script:ModuleRoot = $PSScriptRoot
 $script:OutPutFolder = "$PSScriptRoot\Output"
-$script:ImportFolders = @('ArgumentCompleters','Public', 'Internal', 'Classes')
+$script:ImportFolders = @('ArgumentCompleters', 'Public', 'Internal', 'Classes')
 $script:PsmPath = Join-Path -Path $PSScriptRoot -ChildPath "Output\$($script:ModuleName)\$($script:ModuleName).psm1"
 $script:PsdPath = Join-Path -Path $PSScriptRoot -ChildPath "Output\$($script:ModuleName)\$($script:ModuleName).psd1"
 $script:HelpPath = Join-Path -Path $PSScriptRoot -ChildPath "Output\$($script:ModuleName)\en-US"
@@ -17,8 +17,7 @@ $script:DSCResourceFolder = 'DSCResources'
 
 
 task "Clean" {
-    if (-not(Test-Path $script:OutPutFolder))
-    {
+    if (-not(Test-Path $script:OutPutFolder)) {
         New-Item -ItemType Directory -Path $script:OutPutFolder > $null
     }
 
@@ -27,8 +26,7 @@ task "Clean" {
 
 $compileParams = @{
     Inputs = {
-        foreach ($folder in $script:ImportFolders)
-        {
+        foreach ($folder in $script:ImportFolders) {
             Get-ChildItem -Path $folder -Recurse -File -Filter '*.ps1'
         }
     }
@@ -39,27 +37,27 @@ $compileParams = @{
 }
 
 task Compile @compileParams {
-    if (Test-Path -Path $script:PsmPath)
-    {
+    if (Test-Path -Path $script:PsmPath) {
         Remove-Item -Path $script:PsmPath -Recurse -Force
     }
     New-Item -Path $script:PsmPath -Force > $null
 
-    foreach ($folder in $script:ImportFolders)
-    {
+    Get-Content -Path "$script:ModuleRoot\internal\_init.ps1" | Out-File $script:PsmPath -Append -Encoding utf8
+    foreach ($folder in $script:ImportFolders) {
         $currentFolder = Join-Path -Path $script:ModuleRoot -ChildPath $folder
         Write-Verbose -Message "Checking folder [$currentFolder]"
 
-        if (Test-Path -Path $currentFolder)
-        {
+        if (Test-Path -Path $currentFolder) {
             $files = Get-ChildItem -Path $currentFolder -File -Filter '*.ps1'
-            foreach ($file in $files)
-            {
+            foreach ($file in $files) {
+                if ($folder -eq 'Internal' -and $file.Name -in @('_init.ps1', '_end.ps1') ) { Continue }
                 Write-Verbose -Message "Adding $($file.FullName)"
-                Get-Content -Path $file.FullName >> $script:PsmPath
+                Get-Content -Path $file.FullName | Out-File $script:PsmPath -Append -Encoding utf8
             }
         }
     }
+    Get-Content -Path "$script:ModuleRoot\internal\_end.ps1" | Out-File $script:PsmPath -Append -Encoding utf8
+  
 }
 
 task CopyPSD {
@@ -68,7 +66,7 @@ task CopyPSD {
         Path        = "$($script:ModuleName).psd1"
         Destination = $script:PsdPath
         Force       = $true
-        Verbose  = $true
+        Verbose     = $true
     }
     Copy-Item @copy
 }
@@ -106,16 +104,14 @@ task RemoveStats -if (Test-Path -Path "$($script:OutPutFolder)\stats.json") {
 
 task WriteStats {
     $folders = Get-ChildItem -Directory | 
-        Where-Object {$PSItem.Name -ne 'Output'}
+        Where-Object { $PSItem.Name -ne 'Output' }
     
-    $stats = foreach ($folder in $folders)
-    {
+    $stats = foreach ($folder in $folders) {
         $files = Get-ChildItem "$($folder.FullName)\*" -File
-        if($files)
-        {
+        if ($files) {
             Get-Content -Path $files | 
-            Measure-Object -Word -Line -Character | 
-            Select-Object -Property @{N = "FolderName"; E = {$folder.Name}}, Words, Lines, Characters
+                Measure-Object -Word -Line -Character | 
+                Select-Object -Property @{N = "FolderName"; E = { $folder.Name } }, Words, Lines, Characters
         }
     }
     $stats | ConvertTo-Json > "$script:OutPutFolder\stats.json"

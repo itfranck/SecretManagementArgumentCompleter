@@ -1,2 +1,4 @@
 
 scratchpad.ps1
+Output/stats.json
+Output/testResults*.xml
